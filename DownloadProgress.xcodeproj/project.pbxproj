@@ -10,11 +10,15 @@
 		5D8568AE1B3B1DCF00582211 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568AD1B3B1DCF00582211 /* main.m */; };
 		5D8568B11B3B1DCF00582211 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568B01B3B1DCF00582211 /* AppDelegate.m */; };
 		5D8568B41B3B1DCF00582211 /* DownloadProgress.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568B21B3B1DCF00582211 /* DownloadProgress.xcdatamodeld */; };
-		5D8568B71B3B1DCF00582211 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568B61B3B1DCF00582211 /* ViewController.m */; };
 		5D8568BA1B3B1DCF00582211 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D8568B81B3B1DCF00582211 /* Main.storyboard */; };
 		5D8568BC1B3B1DCF00582211 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D8568BB1B3B1DCF00582211 /* Images.xcassets */; };
 		5D8568BF1B3B1DCF00582211 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5D8568BD1B3B1DCF00582211 /* LaunchScreen.xib */; };
 		5D8568CB1B3B1DCF00582211 /* DownloadProgressTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568CA1B3B1DCF00582211 /* DownloadProgressTests.m */; };
+		5D8568D61B3B1F7300582211 /* Attachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568D51B3B1F7300582211 /* Attachment.m */; };
+		5D8568DA1B3B219700582211 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568D91B3B219700582211 /* HomeViewController.m */; };
+		5D8568DD1B3B21B900582211 /* AttachmentCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568DC1B3B21B900582211 /* AttachmentCell.m */; };
+		5D8568E31B3B253700582211 /* WebService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568E21B3B253700582211 /* WebService.m */; };
+		5D8568E61B3B256100582211 /* HelperService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D8568E51B3B256100582211 /* HelperService.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,14 +38,22 @@
 		5D8568AF1B3B1DCF00582211 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5D8568B01B3B1DCF00582211 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5D8568B31B3B1DCF00582211 /* DownloadProgress.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DownloadProgress.xcdatamodel; sourceTree = "<group>"; };
-		5D8568B51B3B1DCF00582211 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		5D8568B61B3B1DCF00582211 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		5D8568B91B3B1DCF00582211 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5D8568BB1B3B1DCF00582211 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5D8568BE1B3B1DCF00582211 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		5D8568C41B3B1DCF00582211 /* DownloadProgressTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DownloadProgressTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D8568C91B3B1DCF00582211 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5D8568CA1B3B1DCF00582211 /* DownloadProgressTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DownloadProgressTests.m; sourceTree = "<group>"; };
+		5D8568D41B3B1F7300582211 /* Attachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Attachment.h; sourceTree = "<group>"; };
+		5D8568D51B3B1F7300582211 /* Attachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Attachment.m; sourceTree = "<group>"; };
+		5D8568D81B3B219700582211 /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
+		5D8568D91B3B219700582211 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		5D8568DB1B3B21B900582211 /* AttachmentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentCell.h; sourceTree = "<group>"; };
+		5D8568DC1B3B21B900582211 /* AttachmentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentCell.m; sourceTree = "<group>"; };
+		5D8568E11B3B253700582211 /* WebService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebService.h; path = ../WebService.h; sourceTree = "<group>"; };
+		5D8568E21B3B253700582211 /* WebService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebService.m; path = ../WebService.m; sourceTree = "<group>"; };
+		5D8568E41B3B256100582211 /* HelperService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelperService.h; sourceTree = "<group>"; };
+		5D8568E51B3B256100582211 /* HelperService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelperService.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,13 +97,15 @@
 			children = (
 				5D8568AF1B3B1DCF00582211 /* AppDelegate.h */,
 				5D8568B01B3B1DCF00582211 /* AppDelegate.m */,
-				5D8568B51B3B1DCF00582211 /* ViewController.h */,
-				5D8568B61B3B1DCF00582211 /* ViewController.m */,
 				5D8568B81B3B1DCF00582211 /* Main.storyboard */,
 				5D8568BB1B3B1DCF00582211 /* Images.xcassets */,
 				5D8568BD1B3B1DCF00582211 /* LaunchScreen.xib */,
 				5D8568B21B3B1DCF00582211 /* DownloadProgress.xcdatamodeld */,
+				5D8568D71B3B201900582211 /* Entity */,
 				5D8568AB1B3B1DCF00582211 /* Supporting Files */,
+				5D8568DF1B3B241F00582211 /* ViewControllers */,
+				5D8568DE1B3B241000582211 /* UITableViewCells */,
+				5D8568E71B3B256A00582211 /* APIs */,
 			);
 			path = DownloadProgress;
 			sourceTree = "<group>";
@@ -120,6 +134,52 @@
 				5D8568C91B3B1DCF00582211 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		5D8568D71B3B201900582211 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				5D8568D41B3B1F7300582211 /* Attachment.h */,
+				5D8568D51B3B1F7300582211 /* Attachment.m */,
+			);
+			name = Entity;
+			sourceTree = "<group>";
+		};
+		5D8568DE1B3B241000582211 /* UITableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				5D8568DB1B3B21B900582211 /* AttachmentCell.h */,
+				5D8568DC1B3B21B900582211 /* AttachmentCell.m */,
+			);
+			name = UITableViewCells;
+			sourceTree = "<group>";
+		};
+		5D8568DF1B3B241F00582211 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5D8568E01B3B242B00582211 /* Home */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5D8568E01B3B242B00582211 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				5D8568D81B3B219700582211 /* HomeViewController.h */,
+				5D8568D91B3B219700582211 /* HomeViewController.m */,
+			);
+			name = Home;
+			sourceTree = "<group>";
+		};
+		5D8568E71B3B256A00582211 /* APIs */ = {
+			isa = PBXGroup;
+			children = (
+				5D8568E11B3B253700582211 /* WebService.h */,
+				5D8568E21B3B253700582211 /* WebService.m */,
+				5D8568E41B3B256100582211 /* HelperService.h */,
+				5D8568E51B3B256100582211 /* HelperService.m */,
+			);
+			name = APIs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -223,9 +283,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D8568B11B3B1DCF00582211 /* AppDelegate.m in Sources */,
+				5D8568E31B3B253700582211 /* WebService.m in Sources */,
 				5D8568AE1B3B1DCF00582211 /* main.m in Sources */,
-				5D8568B71B3B1DCF00582211 /* ViewController.m in Sources */,
+				5D8568E61B3B256100582211 /* HelperService.m in Sources */,
 				5D8568B41B3B1DCF00582211 /* DownloadProgress.xcdatamodeld in Sources */,
+				5D8568DA1B3B219700582211 /* HomeViewController.m in Sources */,
+				5D8568DD1B3B21B900582211 /* AttachmentCell.m in Sources */,
+				5D8568D61B3B1F7300582211 /* Attachment.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
