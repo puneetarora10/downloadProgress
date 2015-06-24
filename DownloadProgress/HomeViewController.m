@@ -198,7 +198,7 @@
     }
     // see if any queued attachments can be started
     if (startDownloadingQueuedAttachments) {
-        //[self startDownloadingQueuedAttachments];
+        [self startDownloadingQueuedAttachments];
     }
 }
 
@@ -408,6 +408,133 @@
     [self.navigationItem setTitle:[NSString stringWithFormat:@"%@ %@",HOME_VIEW_CONTROLLER_TITLE,sortBy]];
 }
 
+#pragma mark - Other Methods
+#pragma mark Delete Attachment
+// deletes attachment from the device..
+- (void) deleteAttachment:(Attachment *)attachment {
+    // cancel urlconnection if it exists
+    NSURLConnection *urlConnection = [self.urlConnectionForAttachmentIndex objectForKey:[@([self.attachments indexOfObject:attachment]) stringValue]];
+    if (urlConnection) {// user deleted the attachment while it was getting downloaded
+        // cancel urlConnection
+        [urlConnection cancel];
+        urlConnection = nil;
+        // decrement numberOfDownloadsInProgress
+        self.numberOfDownloadsInProgress > 0 ? self.numberOfDownloadsInProgress-- : 0;
+    }
+    
+    // delete the file
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    BOOL success = [fileManager removeItemAtPath:attachment.localPath error:&error];
+    if (success) {// file has been deleted
+        // update attachment
+        attachment.downloadCompleted = [NSNumber numberWithBool:NO];
+        attachment.downloadInProgress = [NSNumber numberWithBool:NO];
+        attachment.downloadPaused = [NSNumber numberWithBool:NO];
+        attachment.localFileSize = 0;
+        attachment.localPath = nil;
+        attachment.totalLength = 0;
+        
+        // show alertView indicating the file has been deleted..
+        UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"File Deleted!" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+        [alertView show];
+        
+        // find NSIndex
+        NSUInteger attachmentsIndex = [self.attachments indexOfObject:attachment];
+        NSIndexPath *indexPathForAttachment = [NSIndexPath indexPathForRow:attachmentsIndex inSection:0];
+        if([self.tableView.indexPathsForVisibleRows containsObject:indexPathForAttachment]) {// cell is visible
+            AttachmentCell * attachmentCell = (AttachmentCell *)[self.tableView cellForRowAtIndexPath:indexPathForAttachment];
+            // update downloadProgressView
+            [self updateProgressForDownloadProgressViewFor:attachmentCell andAttachment:attachment];
+            // update fileSizeOrStatusLabel
+            [self updateFileSizeOrStatusLabelFor:attachmentCell andAttachment:attachment];
+        }
+        
+        // persist data
+        [self persistData];
+        // startDownloadingQueuedAttachments if possible
+        [self startDownloadingQueuedAttachments];
+    }
+    else {// no need to do anything right now...
+        
+    }
+}
+
+#pragma mark Update DownloadProgressView
+// update progress for attachment's attachmentCell's progressView
+- (void)updateProgressForDownloadProgressViewFor:(AttachmentCell *)attachmentCell andAttachment:(Attachment *)attachment {
+    // calculate progress
+    float progress = 0.0;
+    // get attachment's localFileSize and totalLength
+    float attachmentLocalFileSize = [attachment.localFileSize floatValue];
+    float attachmentTotalLength = [attachment.totalLength floatValue];
+    
+    if (attachmentLocalFileSize > 0.0 && attachmentTotalLength > 0.0) {
+        progress = attachmentLocalFileSize / attachmentTotalLength;
+    }
+    // update amountDownloaded (no need to convert it to percentage but may be useful)
+    attachment.amountDownloaded = [NSNumber numberWithFloat:(progress * 100)];
+    // update downloadProgressView
+    [attachmentCell.downloadProgressView setProgress:progress animated:YES];
+    // update fileSizeOrStatusLabel
+    if (progress == 1.0) {// download complete
+        [self updateFileSizeOrStatusLabelFor:attachmentCell andAttachment:attachment];
+    }
+}
+
+#pragma mark Update FileSizeOrStatusLabel
+// update AttachmentCell's fileSizeOrSatus Label
+- (void)updateFileSizeOrStatusLabelFor:(AttachmentCell *)attachmentCell andAttachment:(Attachment *)attachment {
+    NSString *fileSizeOrStatus = STATUS_BLACK;
+    if ([attachment.downloadCompleted boolValue]) {// downloadCompleted -> show fileSize
+        long attachmentLocalFileSize = [attachment.localFileSize longValue] / 1024; // KB
+        NSString *measure;
+        if (attachmentLocalFileSize > 1024) {
+            attachmentLocalFileSize = attachmentLocalFileSize / 1024; // MB
+            measure = @"MB";
+        }
+        else {
+            measure = @"KB";
+        }
+        fileSizeOrStatus = [@(attachmentLocalFileSize) stringValue];
+        fileSizeOrStatus = [fileSizeOrStatus stringByAppendingString:measure];
+    }
+    else if ([attachment.downloadInProgress boolValue]) {// downloadInProgress
+        fileSizeOrStatus = STATUS_ACTIVE;
+    }
+    else if ([attachment.downloadPaused boolValue]) {// downloadPaused
+        fileSizeOrStatus = STATUS_PAUSED;
+    }
+    else if ([attachment.downloadQueued boolValue]) {// downloadQueued
+        fileSizeOrStatus = STATUS_QUEUED;
+    }
+    // update fileSizeOrStatusLabel
+    [attachmentCell.fileSizeOrStatusLabel setText:fileSizeOrStatus];
+}
+
+#pragma mark StartDownloadingQueuedAttachments
+// starts downloading an attachment from downloadQueueArray
+- (void)startDownloadingQueuedAttachments {
+    // numberOfDownloads that can be started
+    NSUInteger numberOfDownloadsToStart = self.maxNoOfDownloadsAllowed - self.numberOfDownloadsInProgress;
+    for (int i = 0; i < numberOfDownloadsToStart; i++) {// loop through and start downloading
+        if (i < [self.downloadQueueArray count]) {// attachment exists
+            Attachment *attachment = [self.downloadQueueArray objectAtIndex:i];
+            // increment numberOfDownloadsInProgress
+            self.numberOfDownloadsInProgress++;
+            // start downloading
+            NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:[NSMutableURLRequest requestWithURL:attachment.url] delegate:self startImmediately:YES];
+            // add this to urlConnection
+            [self.urlConnectionForAttachmentIndex setObject:urlConnection forKey:[@([self.attachments indexOfObject:attachment]) stringValue]];
+            // update downloadQueued for attachment
+            attachment.downloadQueued = [NSNumber numberWithBool:NO];
+            // update downloadInProgress
+            attachment.downloadInProgress = [NSNumber numberWithBool:YES];
+            // remove attachment from downloadQueueArray
+            [self.downloadQueueArray removeObjectAtIndex:i];
+        }
+    }
+}
 
 #pragma mark Persist Data
 // persists data in other words calls save on self.managedObjectContext
