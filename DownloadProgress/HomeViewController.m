@@ -89,7 +89,7 @@
     // initialize sortByIdentifier
     self.sortByIdentifier = 0;
     // initialize maxNoOfDownloadsAllowed
-    self.maxNoOfDownloadsAllowed = 1;
+    self.maxNoOfDownloadsAllowed = 10;
     // initialize numberOfDownloadsInProgress
     self.numberOfDownloadsInProgress = 0;
     
@@ -645,7 +645,9 @@
         progress = attachmentLocalFileSize / attachmentTotalLength;
     }
     // update amountDownloaded (no need to convert it to percentage but may be useful)
-    attachment.amountDownloaded = [NSNumber numberWithFloat:(progress * 100)];
+    if (progress > 0.0) {
+        attachment.amountDownloaded = [NSNumber numberWithFloat:(progress * 100)];
+    }
     // update downloadProgressView
     [attachmentCell.downloadProgressView setProgress:progress animated:YES];
     // update fileSizeOrStatusLabel
