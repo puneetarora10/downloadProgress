@@ -553,6 +553,13 @@
     }
 }
 
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    // just decrement numberOfDownloadsInProgress for now
+    self.numberOfDownloadsInProgress--;
+    // startDownloadingQueuedAttachments
+    [self startDownloadingQueuedAttachments];
+}
+
 #pragma mark - Other Methods
 #pragma mark Delete Attachment
 // deletes attachment from the device..
