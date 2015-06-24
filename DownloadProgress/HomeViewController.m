@@ -349,6 +349,64 @@
     [alertView show];
 }
 
+# pragma mark - UIAlertViewDelegate
+
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    // get attachment using alertView's tag
+    Attachment *attachment = [self.attachments objectAtIndex:alertView.tag];
+    // find button title
+    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
+    if ([buttonTitle isEqualToString:DOWNLOAD_BUTTON_TITLE] || [buttonTitle isEqualToString:RESUME_BUTTON_TITLE]) { // Download/ Resume
+        // save it in urlStringWithAttachment
+        [self.urlStringForIndexPathRow setObject:[@(alertView.tag) stringValue] forKey:attachment.webURL];
+        
+        if (self.numberOfDownloadsInProgress < self.maxNoOfDownloadsAllowed) {// start download
+            // increment numberOfDownloadsInProgress and update downloadInProgress
+            self.numberOfDownloadsInProgress++;
+            attachment.downloadInProgress = [NSNumber numberWithBool:YES];
+            NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:[NSMutableURLRequest requestWithURL:attachment.url] delegate:self startImmediately:YES];
+            // add this to urlConnection
+            [self.urlConnectionForAttachmentIndex setObject:urlConnection forKey:[@(alertView.tag) stringValue]];
+        }
+        else {// add it to queue and update attachment's downloadQueued
+            attachment.downloadQueued = [NSNumber numberWithBool:YES];
+            attachment.downloadPaused = [NSNumber numberWithBool:NO];
+            [self.downloadQueueArray addObject:attachment];
+            // show alertView indicating the file has been Queued..
+            UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"Queued" message:@"Exceeded maximum no of downloads. So this download is queued!" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil, nil];
+            [alertView show];
+        }
+    }
+    else if ([buttonTitle isEqualToString:PAUSE_BUTTON_TITLE]) {// Pause
+        // update attachment's properties
+        attachment.downloadInProgress = [NSNumber numberWithBool:NO];
+        attachment.downloadPaused = [NSNumber numberWithBool:YES];
+        // fileSizeToBeIgnored
+        attachment.fileSizeToBeIgnored = attachment.localFileSize;
+        // cancel the urlConnection
+        NSURLConnection *urlConnection = [self.urlConnectionForAttachmentIndex objectForKey:[@([self.attachments indexOfObject:attachment]) stringValue]];
+        [urlConnection cancel];
+        // decrement numberOfDownloadsInProgress
+        self.numberOfDownloadsInProgress--;
+        // startDownloadingQueuedAttachments
+        [self startDownloadingQueuedAttachments];
+    }
+    else if ([buttonTitle isEqualToString:DELETE_BUTTON_TITLE]) {// Delete
+        // delete already downloaded
+        [self deleteAttachment:attachment];
+    }
+    
+    // update attachmentCell's fileSizeOrStatusLabel
+    // find NSIndexPath
+    NSIndexPath *indexPathForAttachment = [NSIndexPath indexPathForRow:alertView.tag inSection:0];
+    if([self.tableView.indexPathsForVisibleRows containsObject:indexPathForAttachment]) {// cell is visible
+        AttachmentCell * attachmentCell = (AttachmentCell *)[self.tableView cellForRowAtIndexPath:indexPathForAttachment];
+        [self updateFileSizeOrStatusLabelFor:attachmentCell andAttachment:attachment];
+    }
+    // persist data
+    [self persistData];
+}
+
 #pragma mark - Navigation Bar Button clicks
 // refresh button is clicked
 - (IBAction)refreshButtonClicked:(id)sender {
