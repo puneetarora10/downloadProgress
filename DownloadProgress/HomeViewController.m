@@ -294,67 +294,60 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return 0;
+    return self.attachments.count;
 }
 
-/*
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
+    static NSString *CellIdentifier = ATTACHMENT_CELL_IDENTIFIER;
+    AttachmentCell *attachmentCell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (!attachmentCell) {// create attachmentCell
+        attachmentCell = [[AttachmentCell alloc] init];
+    }
+    // get attachment
+    Attachment *attachment = [self.attachments objectAtIndex:indexPath.row];
+    // Configure the cell
+    attachmentCell.fileNameLabel.text = attachment.name;
+    // update fileSizeOrStatusLabel
+    [self updateFileSizeOrStatusLabelFor:attachmentCell andAttachment:attachment];
+    // update downloadProgressView
+    [self updateProgressForDownloadProgressViewFor:attachmentCell andAttachment:attachment];
     
-    // Configure the cell...
-    
-    return cell;
+    return attachmentCell;
 }
-*/
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+
+#pragma mark - Table view delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // find attachment for row selected
+    Attachment *attachment = [self.attachments objectAtIndex:indexPath.row];
+    // show alertView
+    UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:@"Choose?" message:@"Please click on a Button" delegate:self cancelButtonTitle:CANCEL_BUTTON_TITLE otherButtonTitles:nil, nil];
+    // add Download/ Pause/ Resume button
+    if (![attachment.downloadCompleted boolValue]) {// only if downloadCompleted = NO else just show Delete and Cancel buttons
+        NSString *downloadButtonTitle = DOWNLOAD_BUTTON_TITLE;
+        if ([attachment.downloadInProgress boolValue]) {
+            downloadButtonTitle = PAUSE_BUTTON_TITLE;
+        }
+        else if ([attachment.downloadPaused boolValue]) {
+            downloadButtonTitle = RESUME_BUTTON_TITLE;
+        }
+        // add button
+        [alertView addButtonWithTitle:downloadButtonTitle];
+    }
+    // add Delete Button
+    [alertView addButtonWithTitle:DELETE_BUTTON_TITLE];
+    // to be used to get attachment
+    alertView.tag = indexPath.row;
+    [alertView show];
 }
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark - Navigation Bar Button clicks
 // refresh button is clicked
