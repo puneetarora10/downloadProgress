@@ -484,6 +484,75 @@
     [self persistData];
 }
 
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    // find attachment using connection's originalRequest
+    NSString *indexPathRowString = [self.urlStringForIndexPathRow objectForKey:[[connection originalRequest].URL absoluteString]];
+    NSUInteger indexPathRow = [indexPathRowString integerValue];
+    Attachment *attachment = [self.attachments objectAtIndex:indexPathRow];
+    
+    BOOL appendToFile = YES;
+    NSUInteger attachmentFileSizeToBeIgnored = [attachment.fileSizeToBeIgnored longValue];
+    if (attachmentFileSizeToBeIgnored > 0) {// this attachment was Paused and then Resumed or was Active when app was killed/ crashed
+        if (data.length <= attachmentFileSizeToBeIgnored) {// ignore this data as its already in the file
+            attachment.fileSizeToBeIgnored = [NSNumber numberWithLong:(attachmentFileSizeToBeIgnored - data.length)];
+            // dont append this data to file
+            appendToFile = NO;
+        }
+        else {// get chunk using NSRange
+            @try {
+                NSRange range = NSMakeRange(attachmentFileSizeToBeIgnored, (data.length - attachmentFileSizeToBeIgnored));
+                data = [data subdataWithRange:range];
+                attachment.fileSizeToBeIgnored = [NSNumber numberWithInt:0];
+            }
+            @catch (NSException *exception) {// no need to do anything right now
+            }
+        }
+    }
+    
+    if (appendToFile) {
+        // find file using attachment's localPath
+        NSString *attachmentsLocalPath = attachment.localPath;
+        NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:attachmentsLocalPath];
+        
+        if (!fileHandle) {// create file at localPath
+            [[NSFileManager defaultManager] createFileAtPath:attachmentsLocalPath contents:nil attributes:nil];
+            // open file
+            fileHandle = [NSFileHandle fileHandleForWritingAtPath:attachmentsLocalPath];
+        }
+        
+        if (!fileHandle){// not able to create file (display some error message)
+            return;
+        }
+        // start writing to file
+        @try
+        {
+            // seek to the end of the file
+            [fileHandle seekToEndOfFile];
+            // write data to it
+            [fileHandle writeData:data];
+            // update localFileSize
+            NSUInteger attachmentLocalFileSize = [attachment.localFileSize longValue];
+            attachmentLocalFileSize += data.length;
+            attachment.localFileSize = [NSNumber numberWithLong:attachmentLocalFileSize];
+            // persist data
+            [self persistData];
+            // update downloadProgressView
+            NSIndexPath *indexPathForAttachment = [NSIndexPath indexPathForRow:indexPathRow inSection:0];
+            if([self.tableView.indexPathsForVisibleRows containsObject:indexPathForAttachment]) {// cell is visible
+                AttachmentCell * attachmentCell = (AttachmentCell *)[self.tableView cellForRowAtIndexPath:indexPathForAttachment];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self updateProgressForDownloadProgressViewFor:attachmentCell andAttachment:attachment];
+                });
+            }
+        }
+        @catch (NSException * e)
+        {
+            // no need to do anything right now
+        }
+        [fileHandle closeFile];
+    }
+}
+
 #pragma mark - Other Methods
 #pragma mark Delete Attachment
 // deletes attachment from the device..
