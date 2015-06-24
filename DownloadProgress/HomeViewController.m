@@ -560,6 +560,26 @@
     [self startDownloadingQueuedAttachments];
 }
 
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    // find attachment using connection's originalRequest
+    NSString *indexPathRowString = [self.urlStringForIndexPathRow objectForKey:[[connection originalRequest].URL absoluteString]];
+    NSUInteger indexPathRow = [indexPathRowString integerValue];
+    Attachment *attachment = [self.attachments objectAtIndex:indexPathRow];
+    
+    // update downloadInProgress and downloadCompleted
+    attachment.downloadInProgress = [NSNumber numberWithBool:NO];
+    attachment.downloadCompleted = [NSNumber numberWithBool:YES];
+    
+    // decrement numberOfDownloadsInProgress
+    self.numberOfDownloadsInProgress--;
+    
+    // persist data
+    [self persistData];
+    
+    // startDownloadingQueuedAttachments
+    [self startDownloadingQueuedAttachments];
+}
+
 #pragma mark - Other Methods
 #pragma mark Delete Attachment
 // deletes attachment from the device..
