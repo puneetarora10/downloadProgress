@@ -459,6 +459,31 @@
     [self.navigationItem setTitle:[NSString stringWithFormat:@"%@ %@",HOME_VIEW_CONTROLLER_TITLE,sortBy]];
 }
 
+#pragma mark -- NSURLConnectionDataDelegate
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    // find attachment using connection's originalRequest
+    NSString *indexPathRowString = [self.urlStringForIndexPathRow objectForKey:[[connection originalRequest].URL absoluteString]];
+    NSUInteger indexPathRow = [indexPathRowString integerValue];
+    Attachment *attachment = [self.attachments objectAtIndex:indexPathRow];
+    // set properties of attachment using response
+    attachment.totalLength = [NSNumber numberWithLongLong:response.expectedContentLength];
+    attachment.mimeType = response.MIMEType;
+    NSString *suggestedFileName = response.suggestedFilename;
+    attachment.localName = suggestedFileName;
+    attachment.localPath = [[HelperService defaultInstance] returnLocalFilePathForFileName:suggestedFileName];
+    // update fileSizeOrStatusLabel
+    NSIndexPath *indexPathForAttachment = [NSIndexPath indexPathForRow:indexPathRow inSection:0];
+    if([self.tableView.indexPathsForVisibleRows containsObject:indexPathForAttachment]) {// cell is visible
+        AttachmentCell * attachmentCell = (AttachmentCell *)[self.tableView cellForRowAtIndexPath:indexPathForAttachment];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateFileSizeOrStatusLabelFor:attachmentCell andAttachment:attachment];
+        });
+    }
+    // persist data
+    [self persistData];
+}
+
 #pragma mark - Other Methods
 #pragma mark Delete Attachment
 // deletes attachment from the device..
