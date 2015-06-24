@@ -88,7 +88,7 @@
     
     // initialize sortByIdentifier
     self.sortByIdentifier = 0;
-    // initialize maxNoOfDownloadsAllowed
+    // initialize maxNoOfDownloadsAllowed to 10
     self.maxNoOfDownloadsAllowed = 10;
     // initialize numberOfDownloadsInProgress
     self.numberOfDownloadsInProgress = 0;
